@@ -4,16 +4,21 @@ libraries = -l{GL,GLU,glut}
 libraries = $(addprefix -l,GL GLU glut)
 project = convex_hull.bin
 
-objects = window.o
+objects = window.o point.o
 
 $(project) : $(objects)
 	$(cxx) $(cppflags) $(libraries) $(objects) -o $@
 
+point.o: point.h
+window.o: point.h
 #%.o : %.cpp
 #	$(CXX) $< -c $(CPPFLAGS) -o $@
 
-.PHONY: clean
+.PHONY: clean test
 
 clean:
 	-rm $(objects) $(project)
+
+test: $(project)
+	./$(project)
 

@@ -1,6 +1,9 @@
 /* Pick points */
 #include <GL/glut.h>
 #include <iostream>
+#include <vector>
+#include "point.h"
+namespace gm = geometry;
 
 void Display_cb();
 void Reshape_cb(int width, int height);
@@ -12,6 +15,7 @@ void initialize();
 
 /* Evil globals */
 int w=500,h=500;
+std::vector<gm::point2d> points;
 
 int main(int argc,char** argv) {
 	glutInit(&argc,argv);
@@ -22,6 +26,17 @@ int main(int argc,char** argv) {
 
 void Display_cb() {
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	glBegin(GL_POINTS);{
+		for(size_t K=0; K<points.size(); ++K)
+			glVertex2dv(points[K].data());
+	};glEnd();
+
+	glBegin(GL_LINE_LOOP);{
+		for(size_t K=0; K<points.size(); ++K)
+			glVertex2dv(points[K].data());
+	};glEnd();
+	
 	glutSwapBuffers(); 
 }
 
@@ -40,8 +55,11 @@ void Motion_cb(int x, int y){
 
 void Mouse_cb(int button, int state, int xw, int yw){
 	double x = double(xw)/w, y = double(h-yw)/h;
+	if(state == GLUT_DOWN)
+		points.push_back( gm::point2d(x,y) );
 
 	std::cerr << x << ' ' << y << '\t';
+	glutPostRedisplay();
 }
 
 void Keyboard_cb(unsigned char key,int x,int y) {
@@ -61,5 +79,7 @@ void initialize() {
 	glutMouseFunc(Mouse_cb);
 	glClearColor(0.85f,0.9f,0.95f,1.f); 
 	glMatrixMode(GL_MODELVIEW); glLoadIdentity(); 
+
+	glColor3f(0,0,0);
 }
 
