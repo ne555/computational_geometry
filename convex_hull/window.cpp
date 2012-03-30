@@ -17,7 +17,8 @@ void initialize();
 /* Evil globals */
 int w=500,h=500;
 int index=0;
-std::vector<gm::point2d> points;
+typedef std::vector<gm::point2d> point_list;
+point_list points;
 
 int main(int argc,char** argv) {
 	glutInit(&argc,argv);
@@ -28,15 +29,18 @@ int main(int argc,char** argv) {
 
 void Display_cb() {
 	glClear(GL_COLOR_BUFFER_BIT);
+	point_list hull = gm::convex_hull::incremental(points);
 
+	glColor3f(0,0,0);
 	glBegin(GL_POINTS);{
 		for(size_t K=0; K<points.size(); ++K)
 			glVertex2dv(points[K].data());
 	};glEnd();
-
+	
+	glColor3f(1,0,0);
 	glBegin(GL_LINE_LOOP);{
-		for(size_t K=0; K<points.size(); ++K)
-			glVertex2dv(points[K].data());
+		for(size_t K=0; K<hull.size(); ++K)
+			glVertex2dv(hull[K].data());
 	};glEnd();
 	
 	glutSwapBuffers(); 

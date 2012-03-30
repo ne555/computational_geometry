@@ -63,5 +63,41 @@ namespace geometry{
 	point2d operator*(point2d::value_type &left, const point2d &right){
 		return right*left;
 	}
+
+	point2d::value_type point2d::operator*(const point2d &b) const{ //inner product
+		return (x*b.x).sum();
+	}
+	point2d::value_type point2d::operator%(const point2d &b) const{ //cross product (z coord)
+		/*
+			\left|
+				\begin{array}{ccc}
+					i & j & k \\
+					a.x & a.y & 0 \\
+					b.x & b.y & 0 \\
+				\end{array}
+			\right|
+		*/
+		return x[0]*b.x[1] - x[1]*b.x[0];
+	}
+	//triangle area( point2d a,b,c ){
+		/*
+			\left|
+				\begin{array}{ccc}
+					1 & a.x & a.y \\
+					1 & b.x & b.y \\
+					1 & c.x & c.y \\
+				\end{array}
+			\right|
+		*/
+	//}
+
+	bool point2d::operator<(const point2d &b) const{ //coordinate
+		for(size_t K=0; K<x.size(); ++K)
+			if(x[K]<b.x[K])
+				return true;
+			else if(b.x[K]<x[K])
+				return false;
+		return false;
+	}
 }
 

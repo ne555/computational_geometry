@@ -22,6 +22,11 @@ namespace geometry{
 		point2d& operator-=(const point2d&);
 		point2d& operator*=(value_type);
 		point2d& operator/=(value_type);
+
+		point2d::value_type operator*(const point2d &b) const; //inner product
+		point2d::value_type operator%(const point2d &b) const; //cross product (z coord)
+
+		bool operator<(const point2d &b) const; //coordinate
 	};
 
 	point2d::value_type manhatan_distance(const point2d &a, const point2d &b);
@@ -31,6 +36,7 @@ namespace geometry{
 	point2d operator*(const point2d &left, point2d::value_type right);
 	point2d operator/(point2d::value_type left, const point2d &right);
 	point2d operator*(point2d::value_type &left, const point2d &right);
+
 }
 
 #endif
