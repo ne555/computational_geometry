@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "point.h"
+#include "geometric_algorithms.h"
 namespace gm = geometry;
 
 void Display_cb();
@@ -15,6 +16,7 @@ void initialize();
 
 /* Evil globals */
 int w=500,h=500;
+int index=0;
 std::vector<gm::point2d> points;
 
 int main(int argc,char** argv) {
@@ -50,15 +52,25 @@ void Reshape_cb(int width, int height){
 	glutPostRedisplay();
 }
 
-void Motion_cb(int x, int y){
+void Motion_cb(int xw, int yw){
+	double x = double(xw)/w, y = double(h-yw)/h;
+	std::cerr << x << ' ' << y << '\t';
+	points[index] = gm::point2d(x,y);
+	glutPostRedisplay();
 }
 
 void Mouse_cb(int button, int state, int xw, int yw){
 	double x = double(xw)/w, y = double(h-yw)/h;
-	if(state == GLUT_DOWN)
-		points.push_back( gm::point2d(x,y) );
+	if(state == GLUT_DOWN){
+		double tol = 0.1;
+		gm::point2d pick(x,y);
+		index = gm::nearest(points.begin(), points.end(), pick)-points.begin();
+		if(points.empty() or gm::manhatan_distance(points[index], pick)>tol ){
+			index = points.size();
+			points.push_back(pick);
+		}
+	}
 
-	std::cerr << x << ' ' << y << '\t';
 	glutPostRedisplay();
 }
 
@@ -77,6 +89,7 @@ void initialize() {
 	glutKeyboardFunc(Keyboard_cb);
 	glutSpecialFunc(Special_cb);
 	glutMouseFunc(Mouse_cb);
+	glutMotionFunc(Motion_cb);
 	glClearColor(0.85f,0.9f,0.95f,1.f); 
 	glMatrixMode(GL_MODELVIEW); glLoadIdentity(); 
 

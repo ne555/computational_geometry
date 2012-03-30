@@ -10,7 +10,7 @@ $(project) : $(objects)
 	$(cxx) $(cppflags) $(libraries) $(objects) -o $@
 
 point.o: point.h
-window.o: point.h
+window.o: point.h geometric_algorithms.h
 #%.o : %.cpp
 #	$(CXX) $< -c $(CPPFLAGS) -o $@
 
