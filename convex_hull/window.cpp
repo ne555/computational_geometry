@@ -31,15 +31,20 @@ int main(int argc,char** argv) {
 
 void Display_cb() {
 	glClear(GL_COLOR_BUFFER_BIT);
-	point_list hull;// = gm::convex_hull::incremental(points);
+	point_list hull = gm::convex_hull::incremental(points);
 
 	glColor3f(0,0,1);
-	glLineWidth(5);
-	glBegin(GL_LINE_LOOP);{
-		glVertex2d(0,0);
-		glVertex2d(0,1);
-		glVertex2d(1,1);
-		glVertex2d(1,0);
+	glLineWidth(1);
+	glBegin(GL_LINES);{
+		for(float K=0; K<1; K+=0.1){
+			glVertex2d(K,0);
+			glVertex2d(K,1);
+		}
+		for(float K=0; K<1; K+=0.1){
+			glVertex2d(0,K);
+			glVertex2d(1,K);
+		}
+			
 	};glEnd();
 
 	glColor3f(0,0,0);
@@ -77,25 +82,19 @@ void Reshape_cb(int width, int height){
 	ew = 1.0/std::min(h,w);
 	eh = 1.0/std::min(h,w);
 	
-
-	//glOrtho(0,1,0,1,-1,1);
 	glutPostRedisplay();
 }
 
 void Motion_cb(int xw, int yw){
 	double x = double(xw)*ew, y = double(h-yw)*eh;
-	std::cerr << '(' << xw << ',' << yw << ") -> ";
-	std::cerr << '(' << x << ',' << y << ") ";
 	points[index] = gm::point2d(x,y);
 	glutPostRedisplay();
 }
 
 void Mouse_cb(int button, int state, int xw, int yw){
 	double x = double(xw)*ew, y = double(h-yw)*eh;
-	std::cerr << '(' << xw << ',' << yw << ") -> ";
-	std::cerr << '(' << x << ',' << y << ") ";
 	if(state == GLUT_DOWN){
-		double tol = 0.1;
+		double tol = 0.01;
 		gm::point2d pick(x,y);
 		index = gm::nearest(points.begin(), points.end(), pick)-points.begin();
 		if(points.empty() or gm::manhatan_distance(points[index], pick)>tol ){

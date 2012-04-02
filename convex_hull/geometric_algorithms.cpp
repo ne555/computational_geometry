@@ -25,8 +25,6 @@ namespace geometry{
 		Iter rigth_tangent(Iter mid, const point2d &value){
 			Iter end = mid;
 			++end;
-			if( turn_left(value, *mid, *end) ) return mid;
-
 			while( not turn_left(value, *mid, *end) ){
 				end = ++mid;
 				++end;
@@ -38,8 +36,6 @@ namespace geometry{
 		Iter left_tangent(Iter mid, const point2d &value){
 			Iter end = mid;
 			--end;
-			if( not turn_left(value, *mid, *end) ) return mid;
-
 			while( turn_left(value, *mid, *end) ){
 				end = --mid;
 				--end;
@@ -53,12 +49,17 @@ namespace geometry{
 			if(not turn_left(points[0], points[1], points[2])) //make sure to store ccw
 				std::swap(points[0], points[1]);
 			list hull(points.begin(), points.begin()+3);
-			hull.push_front(hull.front()); //duplicated endpoints
-			list::iterator hint = --hull.end();
+			hull.push_front(points[2]); //duplicated endpoints
 
 			for(size_t K=3; K<points.size(); ++K){
-				hull.erase( hull.begin(), rigth_tangent(hull.begin(), points[K]) );
-				hull.erase( ++left_tangent(--hull.end(), points[K]), hull.end() );
+				list::iterator 
+					r = rigth_tangent(hull.begin(), points[K]),
+					l = left_tangent(--hull.end(), points[K]);
+				++l;
+
+				hull.erase(hull.begin(), r);
+				if(l!=hull.end())
+				hull.erase(l, hull.end());
 
 				hull.push_front(points[K]); //duplicated endpoints
 				hull.push_back(points[K]); //duplicated endpoints
