@@ -99,5 +99,9 @@ namespace geometry{
 				return false;
 		return false;
 	}
+
+	bool turn_left(const point2d &beg, const point2d &mid, const point2d &end){
+		return (mid-beg)%(end-beg)<0;
+	}
 }
 

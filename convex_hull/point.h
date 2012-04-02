@@ -37,6 +37,8 @@ namespace geometry{
 	point2d operator/(point2d::value_type left, const point2d &right);
 	point2d operator*(point2d::value_type &left, const point2d &right);
 
+	bool turn_left(const point2d &beg, const point2d &mid, const point2d &end);
+
 }
 
 #endif

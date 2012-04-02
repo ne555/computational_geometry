@@ -2,6 +2,7 @@
 #include <GL/glut.h>
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 #include "point.h"
 #include "geometric_algorithms.h"
 namespace gm = geometry;
@@ -16,6 +17,7 @@ void initialize();
 
 /* Evil globals */
 int w=500,h=500;
+float ew=1.0/w, eh=1.0/h;
 int index=0;
 typedef std::vector<gm::point2d> point_list;
 point_list points;
@@ -29,14 +31,30 @@ int main(int argc,char** argv) {
 
 void Display_cb() {
 	glClear(GL_COLOR_BUFFER_BIT);
-	point_list hull = gm::convex_hull::incremental(points);
+	point_list hull;// = gm::convex_hull::incremental(points);
+
+	glColor3f(0,0,1);
+	glLineWidth(5);
+	glBegin(GL_LINE_LOOP);{
+		glVertex2d(0,0);
+		glVertex2d(0,1);
+		glVertex2d(1,1);
+		glVertex2d(1,0);
+	};glEnd();
 
 	glColor3f(0,0,0);
+	glPointSize(4);
 	glBegin(GL_POINTS);{
 		for(size_t K=0; K<points.size(); ++K)
 			glVertex2dv(points[K].data());
 	};glEnd();
+	glPointSize(2);
+	glBegin(GL_POINTS);{
+		for(size_t K=0; K<hull.size(); ++K)
+			glVertex2dv(hull[K].data());
+	};glEnd();
 	
+	glLineWidth(1);
 	glColor3f(1,0,0);
 	glBegin(GL_LINE_LOOP);{
 		for(size_t K=0; K<hull.size(); ++K)
@@ -52,19 +70,30 @@ void Reshape_cb(int width, int height){
 	glViewport(0,0,w,h); 
 	glMatrixMode(GL_PROJECTION);  
 	glLoadIdentity();
-	glOrtho(0,1,0,1,-1,1);
+	if(w<=h)
+		glOrtho(0,1,0,float(h)/w,-1,1);
+	else
+		glOrtho(0,float(w)/h,0,1,-1,1);
+	ew = 1.0/std::min(h,w);
+	eh = 1.0/std::min(h,w);
+	
+
+	//glOrtho(0,1,0,1,-1,1);
 	glutPostRedisplay();
 }
 
 void Motion_cb(int xw, int yw){
-	double x = double(xw)/w, y = double(h-yw)/h;
-	std::cerr << x << ' ' << y << '\t';
+	double x = double(xw)*ew, y = double(h-yw)*eh;
+	std::cerr << '(' << xw << ',' << yw << ") -> ";
+	std::cerr << '(' << x << ',' << y << ") ";
 	points[index] = gm::point2d(x,y);
 	glutPostRedisplay();
 }
 
 void Mouse_cb(int button, int state, int xw, int yw){
-	double x = double(xw)/w, y = double(h-yw)/h;
+	double x = double(xw)*ew, y = double(h-yw)*eh;
+	std::cerr << '(' << xw << ',' << yw << ") -> ";
+	std::cerr << '(' << x << ',' << y << ") ";
 	if(state == GLUT_DOWN){
 		double tol = 0.1;
 		gm::point2d pick(x,y);
@@ -79,6 +108,9 @@ void Mouse_cb(int button, int state, int xw, int yw){
 }
 
 void Keyboard_cb(unsigned char key,int x,int y) {
+	switch(key){
+	case 'q': exit(EXIT_SUCCESS);
+	}
 }
 
 void Special_cb(int key,int xm,int ym) {
