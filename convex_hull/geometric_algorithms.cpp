@@ -65,7 +65,49 @@ namespace geometry{
 				hull.push_back(points[K]); //duplicated endpoints
 			}
 
-			return std::vector<point2d>(hull.begin(), hull.end());
+			return std::vector<point2d>(++hull.begin(), hull.end());
+		}
+
+		std::vector< std::vector<point2d> > onion_layers(std::vector<point2d> points){
+			if(points.size()<3) return std::vector< std::vector<point2d> >();
+			std::sort(points.begin(), points.end());
+
+			std::vector<bool> in_here(points.size(),false);
+			std::vector< std::vector<point2d> > onion;
+			//while( not points.empty() ){
+			while(points.size()>=3){
+				if(not turn_left(points[0], points[1], points[2])) //make sure to store ccw
+					std::swap(points[0], points[1]);
+				list layer(points.begin(),points.begin()+3);
+				layer.push_front(points[2]); //duplicated endpoints
+
+				std::vector<bool> in_hull(points.size(),false);
+				in_hull[0] = in_hull[1] = in_hull[2] = true;
+
+				//get an increment
+				for(size_t K=3; K<points.size(); ++K){
+					list::iterator 
+						r = rigth_tangent(layer.begin(), points[K]),
+						l = left_tangent(--layer.end(), points[K]);
+					++l;
+
+					layer.erase(layer.begin(), r);
+					if(l!=layer.end())
+					layer.erase(l, layer.end());
+
+					layer.push_front(points[K]); //duplicated endpoints
+					layer.push_back(points[K]); //duplicated endpoints
+				}
+				layer.pop_front();
+
+				//delete the used points
+				for(list::iterator it=layer.begin(); it!=layer.end(); ++it)
+					points.erase( std::find(points.begin(), points.end(), *it) );
+				
+
+				onion.push_back( std::vector<point2d>(layer.begin(), layer.end()) );
+			}
+			return onion;
 		}
 
 	}

@@ -99,9 +99,22 @@ namespace geometry{
 				return false;
 		return false;
 	}
+	bool point2d::operator==(const point2d &b) const{
+		for(size_t K=0; K<x.size(); ++K)
+			if(x[K]!=b.x[K])
+				return false;
+		return true;
+	}
 
 	bool turn_left(const point2d &beg, const point2d &mid, const point2d &end){
 		return (mid-beg)%(end-beg)<0;
+	}
+
+	void point2d::print(std::ostream &out) const{
+		out << " (";
+		for(size_t K=0; K<x.size(); ++K)
+			out << x[K] << ' ';
+		out << ") ";
 	}
 }
 

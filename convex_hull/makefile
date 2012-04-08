@@ -1,5 +1,5 @@
 cxx = g++
-cppflags = -Wall -pedantic-errors -O2
+cppflags = -Wall -pedantic-errors -ggdb
 libraries = -l{GL,GLU,glut}
 libraries = $(addprefix -l,GL GLU glut)
 project = convex_hull.bin

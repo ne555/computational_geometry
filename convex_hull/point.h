@@ -2,6 +2,8 @@
 #define POINT_H
 #include <valarray>
 
+	#include <iostream>
+
 namespace geometry{
 	class point2d{
 	public:
@@ -27,6 +29,9 @@ namespace geometry{
 		point2d::value_type operator%(const point2d &b) const; //cross product (z coord)
 
 		bool operator<(const point2d &b) const; //coordinate
+		bool operator==(const point2d &b) const;
+
+		void print(std::ostream &out) const;
 	};
 
 	point2d::value_type manhatan_distance(const point2d &a, const point2d &b);

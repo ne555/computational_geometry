@@ -31,16 +31,15 @@ int main(int argc,char** argv) {
 
 void Display_cb() {
 	glClear(GL_COLOR_BUFFER_BIT);
-	point_list hull = gm::convex_hull::incremental(points);
 
 	glColor3f(0,0,1);
 	glLineWidth(1);
 	glBegin(GL_LINES);{
-		for(float K=0; K<1; K+=0.1){
+		for(float K=0; K<1; K+=0.02){
 			glVertex2d(K,0);
 			glVertex2d(K,1);
 		}
-		for(float K=0; K<1; K+=0.1){
+		for(float K=0; K<1; K+=0.02){
 			glVertex2d(0,K);
 			glVertex2d(1,K);
 		}
@@ -54,17 +53,18 @@ void Display_cb() {
 			glVertex2dv(points[K].data());
 	};glEnd();
 	glPointSize(2);
-	glBegin(GL_POINTS);{
-		for(size_t K=0; K<hull.size(); ++K)
-			glVertex2dv(hull[K].data());
-	};glEnd();
+
+	std::vector< std::vector<gm::point2d> > onion = gm::convex_hull::onion_layers(points);
 	
 	glLineWidth(1);
 	glColor3f(1,0,0);
-	glBegin(GL_LINE_LOOP);{
-		for(size_t K=0; K<hull.size(); ++K)
-			glVertex2dv(hull[K].data());
-	};glEnd();
+	for(size_t K=0; K<onion.size(); ++K){
+		glBegin(GL_LINE_LOOP);{
+			std::vector<gm::point2d> &hull = onion[K];
+			for(size_t L=0; L<hull.size(); ++L)
+				glVertex2dv(hull[L].data());
+		};glEnd();
+	}
 	
 	glutSwapBuffers(); 
 }
@@ -125,7 +125,7 @@ void initialize() {
 	glutSpecialFunc(Special_cb);
 	glutMouseFunc(Mouse_cb);
 	glutMotionFunc(Motion_cb);
-	glClearColor(0.85f,0.9f,0.95f,1.f); 
+	glClearColor(1,1,1,1); 
 	glMatrixMode(GL_MODELVIEW); glLoadIdentity(); 
 
 	glColor3f(0,0,0);

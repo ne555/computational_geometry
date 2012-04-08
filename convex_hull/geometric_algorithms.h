@@ -15,6 +15,7 @@ namespace geometry{
 	}
 	namespace convex_hull{
 		std::vector<point2d> incremental(std::vector<point2d>);
+		std::vector< std::vector<point2d> > onion_layers(std::vector<point2d> points);
 	}
 }
 
