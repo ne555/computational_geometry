@@ -31,6 +31,9 @@ namespace geometry{
 		bool operator<(const point2d &b) const; //coordinate
 		bool operator==(const point2d &b) const;
 
+		point2d::value_type& operator[](size_t);
+		point2d::value_type operator[](size_t) const;
+
 		void print(std::ostream &out) const;
 	};
 
@@ -43,7 +46,6 @@ namespace geometry{
 	point2d operator*(point2d::value_type &left, const point2d &right);
 
 	bool turn_left(const point2d &beg, const point2d &mid, const point2d &end);
-
 }
 
 #endif

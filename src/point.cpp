@@ -116,5 +116,12 @@ namespace geometry{
 			out << x[K] << ' ';
 		out << ") ";
 	}
+
+	point2d::value_type& point2d::operator[](size_t index){
+		return x[index];
+	}
+	point2d::value_type point2d::operator[](size_t index) const{
+		return x[index];
+	}
 }
 

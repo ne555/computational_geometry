@@ -1,6 +1,7 @@
 #include "geometric_algorithms.h"
 #include <algorithm>
 #include <vector>
+#include <utility>
 #include <list>
 
 	#include <iostream>
@@ -110,6 +111,46 @@ namespace geometry{
 			return onion;
 		}
 
+	}
+
+	static std::pair<point2d, double> calc_circle(const point2d &a, const point2d &b){
+		return std::pair<point2d, double>( (a+b)/2, (a-b).norm_sqr() );
+	}
+	static std::pair<point2d, double> calc_circle(point2d A, point2d B, point2d C){
+		//http://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates
+		//translation is invariant (simplify calculation)
+		B-=A;
+		C-=A;
+		double determinant = 2*(B[0]*C[1]-B[1]*C[0]);
+		point2d center = point2d(
+			B.norm_sqr()*C[1]-B[1]*C.norm_sqr(),
+			C.norm_sqr()*B[0]-C[0]*B.norm_sqr())/determinant;
+
+		double radious = center.norm_sqr();
+
+		return std::pair<point2d, double>(center, radious);
+	}
+
+	std::pair<point2d, double> enclosing_circle(const std::vector<point2d> &v){
+		std::pair<point2d, double> circle;
+		if(not v.empty()){
+			circle.first = v[0];
+			circle.second = 0;
+		}
+		if(v.size()>1)
+			circle = calc_circle(v[0], v[1]);
+		else circle = calc_circle(v[0], v[1], v[2]);
+		
+/*
+		for(size_t K=0; K<v.size(); ++K){
+			if(not inside(circle.first, circle.second, v[K])){
+			
+			}
+		}
+*/
+
+		circle.second = sqrt(circle.second); //work with the square radious as long as possible
+		return circle;
 	}
 }
 

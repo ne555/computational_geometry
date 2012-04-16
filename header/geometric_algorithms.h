@@ -3,6 +3,7 @@
 
 #include "point.h"
 #include <vector>
+#include <utility>
 
 namespace geometry{
 	template <class Iter>
@@ -17,6 +18,8 @@ namespace geometry{
 		std::vector<point2d> incremental(std::vector<point2d>);
 		std::vector< std::vector<point2d> > onion_layers(std::vector<point2d> points);
 	}
+
+	std::pair<point2d, double> enclosing_circle(const std::vector<point2d>&);
 }
 
 #endif 
