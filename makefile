@@ -1,25 +1,25 @@
 cxx = g++
 cppflags = -Wall -pedantic-errors -ggdb
 libraries = $(addprefix -l,GL GLU glut)
-project = convex_hull.bin
+projects = convex_hull.bin
 
-objects = $(addprefix obj/, convex_hull.o point.o geometric_algorithms.o)
+ch_objects = $(addprefix obj/, convex_hull.o point.o geometric_algorithms.o)
 
-$(project) : $(objects)
-	$(cxx) $(cppflags) $(libraries) $(objects) -o $@
+all: $(projects)
 
-obj/point.o: $(addprefix header/, point.h)
+convex_hull.bin : $(ch_objects)
+	$(cxx) $(cppflags) $(libraries) $(ch_objects) -o $@
+
 obj/convex_hull.o: $(addprefix header/, point.h geometric_algorithms.h)
+obj/point.o: $(addprefix header/, point.h)
 obj/geometric_algorithms.o: $(addprefix header/, point.h geometric_algorithms.h)
 
 obj/%.o: src/%.cpp
 	@$(cxx) $< -c $(cppflags) -Iheader -o $@
 
-.PHONY: clean test
+.PHONY: clean 
 
 clean:
-	-rm $(objects) $(project)
+	-rm $(ch_objects) $(projects)
 
-test: $(project)
-	./$(project)
 
