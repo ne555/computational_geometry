@@ -114,7 +114,7 @@ namespace geometry{
 	}
 
 	static std::pair<point2d, double> calc_circle(const point2d &a, const point2d &b){
-		return std::pair<point2d, double>( (a+b)/2, (a-b).norm_sqr() );
+		return std::pair<point2d, double>( (a+b)/2, (a-b).norm_sqr()/4 );
 	}
 	static std::pair<point2d, double> calc_circle(point2d A, point2d B, point2d C){
 		//http://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates
@@ -128,7 +128,10 @@ namespace geometry{
 
 		double radious = center.norm_sqr();
 
-		return std::pair<point2d, double>(center, radious);
+		return std::pair<point2d, double>(center+A, radious);
+	}
+	static bool inside_circle(const point2d &center, double radious, const point2d &p){
+		return (center-p).norm_sqr()<=radious;
 	}
 
 	std::pair<point2d, double> enclosing_circle(const std::vector<point2d> &v){
@@ -137,17 +140,21 @@ namespace geometry{
 			circle.first = v[0];
 			circle.second = 0;
 		}
-		if(v.size()>1)
-			circle = calc_circle(v[0], v[1]);
-		else circle = calc_circle(v[0], v[1], v[2]);
-		
-/*
-		for(size_t K=0; K<v.size(); ++K){
-			if(not inside(circle.first, circle.second, v[K])){
-			
+		for(size_t K=0; K<v.size(); ++K)
+			if(not inside_circle(circle.first, circle.second, v[K])){
+				//The circle must pass trough the K point
+				circle = calc_circle(v[K], v[0]);
+				for(size_t L=0; L<K; ++L)
+					if(not inside_circle(circle.first, circle.second, v[L])){
+						//The circle must pass trough the K and L points
+						circle = calc_circle(v[K], v[L]);
+						for(size_t M=0; M<L; ++M){
+							if(not inside_circle(circle.first, circle.second, v[M]))
+								//The circle must pass trough the K, L and M points
+								circle = calc_circle(v[K], v[L], v[M]);
+						}
+					}
 			}
-		}
-*/
 
 		circle.second = sqrt(circle.second); //work with the square radious as long as possible
 		return circle;
