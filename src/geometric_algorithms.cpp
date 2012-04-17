@@ -159,5 +159,6 @@ namespace geometry{
 		circle.second = sqrt(circle.second); //work with the square radious as long as possible
 		return circle;
 	}
+
 }
 

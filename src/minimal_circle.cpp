@@ -26,14 +26,6 @@ point_list points;
 int main(int argc,char** argv) {
 	glutInit(&argc,argv);
 	initialize();
-	size_t n=1e4;
-	for(size_t K=0; K<n; ++K){
-		double x = rand()/double(RAND_MAX);
-		double y = rand()/double(RAND_MAX);
-		gm::point2d base(0.5, 0.5);
-		points.push_back(base+gm::point2d(x,y)/4);
-	}
-	gm::enclosing_circle(points).first.print(std::cerr);
 	glutMainLoop();
 	return 0;
 }
@@ -48,13 +40,23 @@ void Display_cb() {
 			glVertex2dv(points[K].data());
 	};glEnd();
 
-	if(not points.empty()){
-		std::pair<gm::point2d, double> circle = gm::enclosing_circle(points);
-		glLineWidth(1);
-		glColor3f(1,0,0);
+	std::vector< std::vector<gm::point2d> > onion = gm::convex_hull::onion_layers(points);
+	
+	glLineWidth(2);
+	glColor3f(1,0,0);
+	for(size_t K=0; K<onion.size(); ++K){
+		glBegin(GL_LINE_LOOP);{
+			std::vector<gm::point2d> &hull = onion[K];
+			for(size_t L=0; L<hull.size(); ++L)
+				glVertex2dv(hull[L].data());
+		};glEnd();
+	}
+
+	glLineWidth(1);
+	glColor3f(0,1,0);
+	for(size_t K=0; K<onion.size(); ++K){
+		std::pair<gm::point2d, double> circle = gm::enclosing_circle(onion[K]);
 		draw_circle(circle.first, circle.second);
-		circle.first.print(std::cerr);
-		std::cerr << circle.second << ' ';
 	}
 	glutSwapBuffers(); 
 }

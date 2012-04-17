@@ -34,6 +34,9 @@ namespace geometry{
 		point2d::value_type& operator[](size_t);
 		point2d::value_type operator[](size_t) const;
 
+		point2d ccw_ort() const;
+		point2d normalized() const;
+
 		void print(std::ostream &out) const;
 	};
 

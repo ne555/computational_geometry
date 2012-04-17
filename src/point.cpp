@@ -111,7 +111,7 @@ namespace geometry{
 	}
 
 	void point2d::print(std::ostream &out) const{
-		out << " (";
+		out << " ( ";
 		for(size_t K=0; K<x.size(); ++K)
 			out << x[K] << ' ';
 		out << ") ";
@@ -122,6 +122,13 @@ namespace geometry{
 	}
 	point2d::value_type point2d::operator[](size_t index) const{
 		return x[index];
+	}
+
+	point2d point2d::ccw_ort() const{
+		return point2d(-x[1], x[0]);
+	}
+	point2d point2d::normalized() const{
+		return (*this)/std::sqrt(this->norm_sqr());
 	}
 }
 

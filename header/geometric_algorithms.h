@@ -6,6 +6,8 @@
 #include <utility>
 
 namespace geometry{
+	class line;
+	class circle;
 	template <class Iter>
 	Iter nearest(Iter beg, Iter end, const point2d &value){
 		Iter result = beg;
@@ -20,6 +22,7 @@ namespace geometry{
 	}
 
 	std::pair<point2d, double> enclosing_circle(const std::vector<point2d>&);
+
 }
 
 #endif 
