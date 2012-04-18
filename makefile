@@ -4,8 +4,8 @@ cppflags = -Wall -pedantic-errors -ggdb
 libraries = $(addprefix -l,GL GLU glut)
 projects = convex_hull.bin minimal_circle.bin test.bin
 
-ch_objects = $(addprefix obj/, convex_hull.o point.o geometric_algorithms.o)
-mec_objects = $(addprefix obj/, minimal_circle.o point.o geometric_algorithms.o)
+ch_objects = $(addprefix obj/, convex_hull.o point.o geometric_algorithms.o circle.o line.o)
+mec_objects = $(addprefix obj/, minimal_circle.o point.o circle.o line.o geometric_algorithms.o)
 test_objects = $(addprefix obj/, test.o point.o line.o circle.o)
 
 all: $(projects)
@@ -14,6 +14,7 @@ convex_hull.bin : $(ch_objects)
 	$(cxx) $(cppflags) $(libraries) $(ch_objects) -o $@
 
 minimal_circle.bin : $(mec_objects)
+	echo hello world $(mec_objects)
 	$(cxx) $(cppflags) $(libraries) $(mec_objects) -o $@
 
 test.bin : $(test_objects)

@@ -2,6 +2,7 @@
 #define GEOM_ALGO_H
 
 #include "point.h"
+#include "circle.h"
 #include <vector>
 #include <utility>
 
@@ -21,7 +22,7 @@ namespace geometry{
 		std::vector< std::vector<point2d> > onion_layers(std::vector<point2d> points);
 	}
 
-	std::pair<point2d, double> enclosing_circle(const std::vector<point2d>&);
+	circle enclosing_circle(const std::vector<point2d>&);
 
 }
 

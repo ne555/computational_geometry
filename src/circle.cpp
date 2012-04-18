@@ -8,7 +8,11 @@ namespace geometry{
 		center(c), 
 		radious_sqr(radious*radious){}
 
-	circle::circle(const point2d &a, point2d &b):
+	circle::circle():
+		center(),
+		radious_sqr(0){}
+
+	circle::circle(const point2d &a, const point2d &b):
 		center((a+b)/2), 
 		radious_sqr((a-b).norm_sqr()/4 ){}
 
@@ -23,6 +27,7 @@ namespace geometry{
 				c.norm_sqr()*b[0]-c[0]*b.norm_sqr())/determinant;
 
 		radious_sqr = center.norm_sqr();
+		center += a;
 	}
 
 	bool circle::inside(const point2d &p) const{

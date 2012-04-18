@@ -1,4 +1,5 @@
 #include "geometric_algorithms.h"
+#include "circle.h"
 #include <algorithm>
 #include <vector>
 #include <utility>
@@ -134,30 +135,27 @@ namespace geometry{
 		return (center-p).norm_sqr()<=radious;
 	}
 
-	std::pair<point2d, double> enclosing_circle(const std::vector<point2d> &v){
-		std::pair<point2d, double> circle;
-		if(not v.empty()){
-			circle.first = v[0];
-			circle.second = 0;
-		}
+	circle enclosing_circle(const std::vector<point2d> &v){
+		circle c;
+		if(not v.empty())
+			c = circle(v[0], 0);
+
 		for(size_t K=0; K<v.size(); ++K)
-			if(not inside_circle(circle.first, circle.second, v[K])){
+			if(not c.inside(v[K])){
 				//The circle must pass trough the K point
-				circle = calc_circle(v[K], v[0]);
+				c = circle(v[K], v[0]);
 				for(size_t L=0; L<K; ++L)
-					if(not inside_circle(circle.first, circle.second, v[L])){
+					if(not c.inside(v[L])){
 						//The circle must pass trough the K and L points
-						circle = calc_circle(v[K], v[L]);
-						for(size_t M=0; M<L; ++M){
-							if(not inside_circle(circle.first, circle.second, v[M]))
+						c = circle(v[K], v[L]);
+						for(size_t M=0; M<L; ++M)
+							if(not c.inside(v[M]))
 								//The circle must pass trough the K, L and M points
-								circle = calc_circle(v[K], v[L], v[M]);
-						}
+								c = circle(v[K], v[L], v[M]);
 					}
 			}
 
-		circle.second = sqrt(circle.second); //work with the square radious as long as possible
-		return circle;
+		return c;
 	}
 
 }

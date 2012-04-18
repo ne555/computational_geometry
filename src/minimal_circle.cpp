@@ -55,8 +55,8 @@ void Display_cb() {
 	glLineWidth(1);
 	glColor3f(0,1,0);
 	for(size_t K=0; K<onion.size(); ++K){
-		std::pair<gm::point2d, double> circle = gm::enclosing_circle(onion[K]);
-		draw_circle(circle.first, circle.second);
+		gm::circle circle = gm::enclosing_circle(onion[K]);
+		draw_circle(circle.center, std::sqrt(circle.radious_sqr));
 	}
 	glutSwapBuffers(); 
 }

@@ -10,8 +10,9 @@ namespace geometry{
 		double radious_sqr;
 
 		circle(const point2d &c, double radious);
-		circle(const point2d &a, point2d &b); 
+		circle(const point2d &a, const point2d &b); 
 		circle(point2d a, point2d b, point2d c);
+		circle();
 
 		bool inside(const point2d &) const;
 		bool intersects(const line &) const;
