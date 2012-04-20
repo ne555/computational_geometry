@@ -19,9 +19,13 @@ namespace geometry{
 	namespace convex_hull{
 		class online{
 		private:
-		//The cpp has explicit instantiation of this method
+		//The cpp has explicit instantiation of these methods
 			template<class container>
-			bool add(container &c, const point2d&);
+				bool add(container &c, const point2d&);
+			template<class container, class iterator>
+				iterator before(container &c, iterator it);
+			template<class container, class iterator>
+				iterator after(container &c, iterator it);
 		public:
 			//ccw
 			std::set<point2d> lower;
@@ -35,6 +39,17 @@ namespace geometry{
 					func(*it);
 				for(ucit it=upper.begin(); it!=upper.end(); ++it)
 					func(*it);
+			}
+		};
+
+		class onion{
+		public:
+			std::vector<online> layers;
+			void add(const point2d &);
+			template<class F>
+			void apply(F func) const{
+				for(size_t K=0; K<layers.size(); ++K)
+					layers[K].apply(func);
 			}
 		};
 		std::vector<point2d> incremental(std::vector<point2d>);

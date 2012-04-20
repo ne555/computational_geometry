@@ -74,7 +74,6 @@ namespace geometry{
 
 			std::vector<bool> in_here(points.size(),false);
 			std::vector< std::vector<point2d> > onion;
-			//while( not points.empty() ){
 			while(points.size()>=3){
 				if(not turn_left(points[0], points[1], points[2])) //make sure to store ccw
 					std::swap(points[0], points[1]);
@@ -119,49 +118,65 @@ namespace geometry{
 		template<class container>
 		bool online::add(container &c, const point2d &p){
 			typedef typename container::iterator iterator;
-			iterator lit = c.insert(p).first;
+			iterator it = c.insert(p).first;
 			if(c.size()==1 or c.size()==2) return true;
 			//std::set<point2d, std::greater<point2d> >::iterator uit = upper.insert(p).first;
 		//if we are correct, then there must be a ccw turn (left)
-			if( lit not_eq c.begin() and lit not_eq --c.end() ){ //special case, the extremes we are sure there are fine
-				iterator prev = lit, next = lit;
+			if( it not_eq c.begin() and it not_eq --c.end() ){ //special case, the extremes we are sure there are fine
+				iterator prev = it, next = it;
 				--prev; ++next;
-				if( not turn_left(*prev, *lit, *next) ){ //crap, we were wrong
-					c.erase(lit); //let everything as it was
+				if( not turn_left(*prev, *it, *next) ){ //crap, we were wrong
+					c.erase(it); //let everything as it was
 					return false; //we did nothing
 				}
 			}
 			//now we need to kill the bad neighbours
-			iterator before=lit, after=lit;
-			if(lit not_eq c.begin()){
-				iterator mid = lit, first;
-				first = --mid; --first;
-				while(mid not_eq c.begin()){
-					if( turn_left(*first, *mid, *lit) ) break;
-					first = --mid; --first;
-				}
-				before = mid;
-				++before;
-			}
-			if(lit not_eq --c.end()){
-				iterator mid = lit, last;
-				last = ++mid; ++last;
-				while(last not_eq c.end()){
-					if( turn_left(*lit, *mid, *last) ) break;
-					last = ++mid; ++last;
-				}
-				after = mid;
-				--after;
-			}
-			if(before not_eq lit)
-				c.erase(before, lit);
-			if(after not_eq lit)
-				c.erase(++lit, ++after);
+			iterator before=this->before(c,it), after=this->after(c,it);
+			if(before not_eq it)
+				c.erase(before, it);
+			if(after not_eq it)
+				c.erase(++it, ++after);
 			return true;
 		}
+
+		template<class container, class iterator>
+		iterator online::before(container &c, iterator it){
+			if(it == c.begin())
+				return it;
+			iterator mid = it, first;
+			first = --mid; --first;
+			while(mid not_eq c.begin()){
+				if( turn_left(*first, *mid, *it) ) break;
+				first = --mid; --first;
+			}
+			return ++mid;
+		}
+		template<class container, class iterator>
+		iterator online::after(container &c, iterator it){
+			if(it == --c.end()) 
+				return it;
+			iterator mid = it, last;
+			last = ++mid; ++last;
+			while(last not_eq c.end()){
+				if( turn_left(*it, *mid, *last) ) break;
+				last = ++mid; ++last;
+			}
+			return --mid;
+		}
+
+
 		//explicit instantiation
 		template bool online::add(std::set<point2d>&, const point2d&);
 		template bool online::add(std::set<point2d, std::greater<point2d> >&, const point2d&);
+
+		template std::set<point2d>::iterator 
+			online::before(std::set<point2d> &c, std::set<point2d>::iterator it);
+		template std::set<point2d, std::greater<point2d> >::iterator 
+			online::before(std::set<point2d, std::greater<point2d> > &c, std::set<point2d>::iterator it);
+		template std::set<point2d>::iterator 
+			online::after(std::set<point2d> &c, std::set<point2d>::iterator it);
+		template std::set<point2d, std::greater<point2d> >::iterator 
+			online::after(std::set<point2d, std::greater<point2d> > &c, std::set<point2d>::iterator it);
 	}
 }
 
