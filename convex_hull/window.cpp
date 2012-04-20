@@ -51,6 +51,8 @@ void Display_cb() {
 			draw_point(points[K]);
 	};glEnd();
 	std::cerr << points.size() << ' ';
+	if(not points.empty())
+		points[0].print(std::cerr);
 
 	
 	glutSwapBuffers(); 
@@ -119,7 +121,7 @@ void initialize() {
 	glutKeyboardFunc(Keyboard_cb);
 	glutSpecialFunc(Special_cb);
 	glutMouseFunc(Mouse_cb);
-	glutMotionFunc(Motion_cb);
+	glutMotionFunc(NULL);
 	glClearColor(1,1,1,1); 
 	glMatrixMode(GL_MODELVIEW); glLoadIdentity(); 
 
