@@ -27,6 +27,8 @@ namespace geometry{
 			template<class container, class iterator>
 				iterator after(container &c, iterator it);
 		public:
+			template<class container>
+				container add_return_mia(container &c, const point2d&);
 			//ccw
 			std::set<point2d> lower;
 			std::set<point2d, std::greater<point2d> > upper;

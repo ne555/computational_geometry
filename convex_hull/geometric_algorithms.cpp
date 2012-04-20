@@ -120,7 +120,6 @@ namespace geometry{
 			typedef typename container::iterator iterator;
 			iterator it = c.insert(p).first;
 			if(c.size()==1 or c.size()==2) return true;
-			//std::set<point2d, std::greater<point2d> >::iterator uit = upper.insert(p).first;
 		//if we are correct, then there must be a ccw turn (left)
 			if( it not_eq c.begin() and it not_eq --c.end() ){ //special case, the extremes we are sure there are fine
 				iterator prev = it, next = it;
@@ -163,11 +162,55 @@ namespace geometry{
 			}
 			return --mid;
 		}
+		template<class container>
+		container online::add_return_mia(container &c, const point2d &p){
+			typedef typename container::iterator iterator;
+			container mia;
+			iterator it = c.insert(p).first;
+			if(c.size()==1 or c.size()==2) return mia;
+		//if we are correct, then there must be a ccw turn (left)
+			if( it not_eq c.begin() and it not_eq --c.end() ){ //special case, the extremes we are sure there are fine
+				iterator prev = it, next = it;
+				--prev; ++next;
+				if( not turn_left(*prev, *it, *next) ){ //crap, we were wrong
+					mia.insert(*it);
+					c.erase(it); //let everything as it was
+					return mia;
+				}
+			}
+			//now we need to kill the bad neighbours
+			iterator before=this->before(c,it), after=this->after(c,it);
+			if(before not_eq it){
+				mia.insert(before,it);
+				c.erase(before, it);
+			}
+			if(after not_eq it){
+				mia.insert(++it, ++after);
+				c.erase(it, after);
+			}
+			return mia;
+		}
+
+		void onion::add(const point2d &p){
+			if(layer.empty()) 
+				layer.push_back(online());
+			std::set<point2d> lower;
+			std::set<point2d, std::greater<point2d> > upper;
+
+
+			layer.push_back(online());
+			layer.back().lower = lower;
+			layer.back().upper = upper;
+		}
 
 
 		//explicit instantiation
 		template bool online::add(std::set<point2d>&, const point2d&);
 		template bool online::add(std::set<point2d, std::greater<point2d> >&, const point2d&);
+		template std::set<point2d>
+			online::add_return_mia(std::set<point2d>&, const point2d&);
+		template std::set<point2d, std::greater<point2d> >
+			online::add_return_mia(std::set<point2d, std::greater<point2d> >&, const point2d&);
 
 		template std::set<point2d>::iterator 
 			online::before(std::set<point2d> &c, std::set<point2d>::iterator it);
