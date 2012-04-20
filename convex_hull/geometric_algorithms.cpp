@@ -110,6 +110,54 @@ namespace geometry{
 			return onion;
 		}
 
+		bool online::add(const point2d &p){
+		//suppose that the point form part of either hull;
+			std::set<point2d>::iterator lit = lower.insert(p).first;
+			std::set<point2d>::iterator end = --lower.end();
+			if(lower.size()==1 or lower.size()==2) return true;
+			//std::set<point2d, std::greater<point2d> >::iterator uit = upper.insert(p).first;
+		//if we are correct, then there must be a ccw turn (left)
+			if( lit not_eq lower.begin() and lit not_eq --lower.end() ){ //special case, the extremes we are sure there are fine
+				std::set<point2d>::iterator prev = lit, next = lit;
+				--prev; ++next;
+				if( not turn_left(*prev, *lit, *next) ){ //crap, we were wrong
+					lower.erase(lit); //let everything as it was
+					return false; //we did nothing
+				}
+			}
+			//now we need to kill the bad neighbours
+			std::set<point2d>::iterator before=lit, after=lit;
+			if(lit not_eq lower.begin()){
+				std::set<point2d>::iterator mid = lit, first;
+				first = --mid; --first;
+				while(mid not_eq lower.begin()){
+					if( turn_left(*first, *mid, *lit) ) break;
+					first = --mid; --first;
+				}
+				before = mid;
+				++before;
+			}
+			if(lit not_eq --lower.end()){
+				std::set<point2d>::iterator mid = lit, last;
+				last = ++mid; ++last;
+				while(last not_eq lower.end()){
+					if( turn_left(*lit, *mid, *last) ) break;
+					last = ++mid; ++last;
+				}
+				after = mid;
+				--after;
+			}
+			if(before not_eq lit)
+				lower.erase(before, lit);
+			if(after not_eq lit)
+				lower.erase(++lit, ++after);
+			return true;
+		}
+
+		template<class container>
+		bool add(container &c, const point2d&){
+		
+		}
 	}
 }
 

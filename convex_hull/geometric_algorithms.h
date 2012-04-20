@@ -3,6 +3,8 @@
 
 #include "point.h"
 #include <vector>
+#include <set>
+#include <functional>
 
 namespace geometry{
 	template <class Iter>
@@ -14,6 +16,22 @@ namespace geometry{
 		return result;
 	}
 	namespace convex_hull{
+		class online{
+		public:
+			//ccw
+			std::set<point2d> lower;
+			std::set<point2d, std::greater<point2d> > upper;
+			bool add(const point2d &);
+			template <class F>
+			void apply(F func) const{
+				typedef std::set<point2d>::const_iterator lcit;
+				typedef std::set<point2d, std::greater<point2d> >::const_iterator ucit;
+				for(lcit it=lower.begin(); it!=lower.end(); ++it)
+					func(*it);
+				for(ucit it=upper.begin(); it!=upper.end(); ++it)
+					func(*it);
+			}
+		};
 		std::vector<point2d> incremental(std::vector<point2d>);
 		std::vector< std::vector<point2d> > onion_layers(std::vector<point2d> points);
 	}

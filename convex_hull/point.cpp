@@ -107,7 +107,7 @@ namespace geometry{
 	}
 
 	bool turn_left(const point2d &beg, const point2d &mid, const point2d &end){
-		return (mid-beg)%(end-beg)<0;
+		return (mid-beg)%(end-beg)>0;
 	}
 
 	void point2d::print(std::ostream &out) const{

@@ -21,6 +21,11 @@ float ew=1.0/w, eh=1.0/h;
 int index=0;
 typedef std::vector<gm::point2d> point_list;
 point_list points;
+void draw_point(const gm::point2d &p){
+	glVertex2dv(p.data());
+}
+
+gm::convex_hull::online hull;
 
 int main(int argc,char** argv) {
 	glutInit(&argc,argv);
@@ -32,39 +37,21 @@ int main(int argc,char** argv) {
 void Display_cb() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glColor3f(0,0,1);
-	glLineWidth(1);
-	glBegin(GL_LINES);{
-		for(float K=0; K<1; K+=0.02){
-			glVertex2d(K,0);
-			glVertex2d(K,1);
-		}
-		for(float K=0; K<1; K+=0.02){
-			glVertex2d(0,K);
-			glVertex2d(1,K);
-		}
-			
-	};glEnd();
 
-	glColor3f(0,0,0);
-	glPointSize(4);
-	glBegin(GL_POINTS);{
-		for(size_t K=0; K<points.size(); ++K)
-			glVertex2dv(points[K].data());
-	};glEnd();
-	glPointSize(2);
-
-	std::vector< std::vector<gm::point2d> > onion = gm::convex_hull::onion_layers(points);
-	
 	glLineWidth(1);
 	glColor3f(1,0,0);
-	for(size_t K=0; K<onion.size(); ++K){
-		glBegin(GL_LINE_LOOP);{
-			std::vector<gm::point2d> &hull = onion[K];
-			for(size_t L=0; L<hull.size(); ++L)
-				glVertex2dv(hull[L].data());
-		};glEnd();
-	}
+	glBegin(GL_LINE_STRIP);{
+		hull.apply( draw_point );
+	};glEnd();
+
+	glPointSize(4);
+	glColor3f(0,0,0);
+	glBegin(GL_POINTS);{
+		for(size_t K=0; K<points.size(); ++K)
+			draw_point(points[K]);
+	};glEnd();
+	std::cerr << points.size() << ' ';
+
 	
 	glutSwapBuffers(); 
 }
@@ -94,6 +81,7 @@ void Motion_cb(int xw, int yw){
 void Mouse_cb(int button, int state, int xw, int yw){
 	double x = double(xw)*ew, y = double(h-yw)*eh;
 	if(state == GLUT_DOWN){
+	/*
 		double tol = 0.01;
 		gm::point2d pick(x,y);
 		index = gm::nearest(points.begin(), points.end(), pick)-points.begin();
@@ -101,6 +89,13 @@ void Mouse_cb(int button, int state, int xw, int yw){
 			index = points.size();
 			points.push_back(pick);
 		}
+	*/
+		gm::point2d pick(x,y);
+		points.push_back(pick);
+		if( hull.add(pick) )
+			std::cout << "Hull" << std::endl;
+		else
+			std::cout << "Inside" << std::endl;
 	}
 
 	glutPostRedisplay();

@@ -12,8 +12,9 @@ $(project) : $(objects)
 point.o: point.h
 window.o: point.h geometric_algorithms.h
 geometric_algorithms.o: point.h geometric_algorithms.h
-#%.o : %.cpp
-#	$(CXX) $< -c $(CPPFLAGS) -o $@
+
+%.o : %.cpp
+	$(cxx) $< -c $(cppflags) -o $@
 
 .PHONY: clean test
 
