@@ -112,35 +112,41 @@ namespace geometry{
 
 		bool online::add(const point2d &p){
 		//suppose that the point form part of either hull;
-			std::set<point2d>::iterator lit = lower.insert(p).first;
-			std::set<point2d>::iterator end = --lower.end();
-			if(lower.size()==1 or lower.size()==2) return true;
+			bool low=add(lower, p), up=add(upper, p);
+			return low or up;
+		}
+
+		template<class container>
+		bool online::add(container &c, const point2d &p){
+			typedef typename container::iterator iterator;
+			iterator lit = c.insert(p).first;
+			if(c.size()==1 or c.size()==2) return true;
 			//std::set<point2d, std::greater<point2d> >::iterator uit = upper.insert(p).first;
 		//if we are correct, then there must be a ccw turn (left)
-			if( lit not_eq lower.begin() and lit not_eq --lower.end() ){ //special case, the extremes we are sure there are fine
-				std::set<point2d>::iterator prev = lit, next = lit;
+			if( lit not_eq c.begin() and lit not_eq --c.end() ){ //special case, the extremes we are sure there are fine
+				iterator prev = lit, next = lit;
 				--prev; ++next;
 				if( not turn_left(*prev, *lit, *next) ){ //crap, we were wrong
-					lower.erase(lit); //let everything as it was
+					c.erase(lit); //let everything as it was
 					return false; //we did nothing
 				}
 			}
 			//now we need to kill the bad neighbours
-			std::set<point2d>::iterator before=lit, after=lit;
-			if(lit not_eq lower.begin()){
-				std::set<point2d>::iterator mid = lit, first;
+			iterator before=lit, after=lit;
+			if(lit not_eq c.begin()){
+				iterator mid = lit, first;
 				first = --mid; --first;
-				while(mid not_eq lower.begin()){
+				while(mid not_eq c.begin()){
 					if( turn_left(*first, *mid, *lit) ) break;
 					first = --mid; --first;
 				}
 				before = mid;
 				++before;
 			}
-			if(lit not_eq --lower.end()){
-				std::set<point2d>::iterator mid = lit, last;
+			if(lit not_eq --c.end()){
+				iterator mid = lit, last;
 				last = ++mid; ++last;
-				while(last not_eq lower.end()){
+				while(last not_eq c.end()){
 					if( turn_left(*lit, *mid, *last) ) break;
 					last = ++mid; ++last;
 				}
@@ -148,16 +154,14 @@ namespace geometry{
 				--after;
 			}
 			if(before not_eq lit)
-				lower.erase(before, lit);
+				c.erase(before, lit);
 			if(after not_eq lit)
-				lower.erase(++lit, ++after);
+				c.erase(++lit, ++after);
 			return true;
 		}
-
-		template<class container>
-		bool add(container &c, const point2d&){
-		
-		}
+		//explicit instantiation
+		template bool online::add(std::set<point2d>&, const point2d&);
+		template bool online::add(std::set<point2d, std::greater<point2d> >&, const point2d&);
 	}
 }
 

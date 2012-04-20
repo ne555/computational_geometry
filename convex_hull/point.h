@@ -3,9 +3,10 @@
 #include <valarray>
 
 	#include <iostream>
+#include <boost/operators.hpp>
 
 namespace geometry{
-	class point2d{
+	class point2d: private boost::less_than_comparable<point2d>{
 	public:
 		typedef double value_type;
 		typedef std::valarray<value_type> vector;
@@ -43,8 +44,8 @@ namespace geometry{
 	point2d operator*(point2d::value_type &left, const point2d &right);
 
 	bool turn_left(const point2d &beg, const point2d &mid, const point2d &end);
-
 }
+
 
 #endif
 

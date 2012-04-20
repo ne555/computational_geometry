@@ -3,6 +3,7 @@
 
 #include "point.h"
 #include <vector>
+#include <utility>
 #include <set>
 #include <functional>
 
@@ -17,6 +18,10 @@ namespace geometry{
 	}
 	namespace convex_hull{
 		class online{
+		private:
+		//The cpp has explicit instantiation of this method
+			template<class container>
+			bool add(container &c, const point2d&);
 		public:
 			//ccw
 			std::set<point2d> lower;
