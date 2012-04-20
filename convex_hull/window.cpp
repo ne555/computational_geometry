@@ -50,9 +50,6 @@ void Display_cb() {
 		for(size_t K=0; K<points.size(); ++K)
 			draw_point(points[K]);
 	};glEnd();
-	std::cerr << points.size() << ' ';
-	if(not points.empty())
-		points[0].print(std::cerr);
 
 	
 	glutSwapBuffers(); 
@@ -94,10 +91,7 @@ void Mouse_cb(int button, int state, int xw, int yw){
 	*/
 		gm::point2d pick(x,y);
 		points.push_back(pick);
-		if( hull.add(pick) )
-			std::cout << "Hull" << std::endl;
-		else
-			std::cout << "Inside" << std::endl;
+		hull.add(pick);
 	}
 
 	glutPostRedisplay();
